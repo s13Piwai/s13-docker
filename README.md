@@ -12,14 +12,14 @@ The `app` container provides everything:
 - Enrollment API
 - File-based demo persistence through the `app-data` Docker volume
 
-The application uses only the Node.js standard library and has no package dependencies. CI tags the image with the last four characters of the Git commit SHA; local builds use `latest` when `IMAGE_TAG` is not set.
+The application uses only the Node.js standard library and has no package dependencies. CI builds the image from the root `Dockerfile`; local builds use the `latest` tag.
 
 ## Tools used
 
 - HTML5, CSS3, and vanilla JavaScript
 - Node.js 22
 - Docker and Docker Compose
-- Forgejo Actions
+- GitHub Actions
 - Git and curl
 
 ## Run
@@ -48,6 +48,6 @@ docker rm -f s13-training-camps
 
 Use `docker volume rm s13-training-camps-data` only when you intentionally want to delete saved demo users and enrollments.
 
-## CI/CD
+## CI
 
-`.github/workflows/deploy-s13-training-camps.yml` builds the single image from the root `Dockerfile`, removes the existing container, starts the replacement with the persistent volume, and verifies its health. No repository variables or secrets are required for this student demo.
+`.github/workflows/build-s13-training-camps.yml` runs on GitHub's `ubuntu-latest` runner for every branch push and `v*` tag. It builds the image and smoke-tests the health and course APIs. This workflow only verifies the image; it does not deploy the application. No repository secrets are required.

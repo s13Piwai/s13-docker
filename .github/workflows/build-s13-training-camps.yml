@@ -1,0 +1,42 @@
+name: Build S13 Training Camps
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and verify image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build --tag s13-training-camps:ci .
+
+      - name: Run container smoke tests
+        run: |
+          set -euo pipefail
+          docker run --detach --name s13-training-camps-test --publish 8080:8080 s13-training-camps:ci
+          trap 'docker rm --force s13-training-camps-test >/dev/null 2>&1 || true' EXIT
+
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8080/health >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              docker logs s13-training-camps-test
+              exit 1
+            fi
+            sleep 2
+          done
+
+          curl --fail --silent --show-error http://127.0.0.1:8080/health
+          curl --fail --silent --show-error http://127.0.0.1:8080/api/courses | grep --quiet '"software"'
