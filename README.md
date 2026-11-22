@@ -51,3 +51,5 @@ Use `docker volume rm s13-training-camps-data` only when you intentionally want 
 ## CI
 
 `.github/workflows/build-s13-training-camps.yml` runs on GitHub's `ubuntu-latest` runner for every branch push and `v*` tag. It builds the image and smoke-tests the health and course APIs. This workflow only verifies the image; it does not deploy the application. No repository secrets are required.
+
+`.github/workflows/publish-ghcr.yml` builds and smoke-tests the image, then publishes it to `ghcr.io/s13piwai/s13-docker:<commit-sha>`. Pushes to the default branch also update `latest`. It uses the repository-provided `GITHUB_TOKEN` with `packages: write`; no additional secret is required. New GHCR packages are private by default and can be made public from the package settings.
