@@ -25,9 +25,7 @@ The application uses only the Node.js standard library and has no package depend
 ## Run
 
 ```bash
-docker build -t s13-training-camps:latest .
-docker volume create s13-training-camps-data
-docker run -d --name s13-training-camps --restart unless-stopped -p 8080:8080 -v s13-training-camps-data:/data s13-training-camps:latest
+docker compose up --build --detach
 ```
 
 Open <http://localhost:8080>.
@@ -35,15 +33,15 @@ Open <http://localhost:8080>.
 ## Verify
 
 ```bash
-docker ps --filter name=s13-training-camps
-curl http://localhost:8080/health
-curl http://localhost:8080/api/courses
+docker compose ps
+curl.exe http://localhost:8080/health
+curl.exe http://localhost:8080/api/courses
 ```
 
 ## Stop
 
 ```bash
-docker rm -f s13-training-camps
+docker compose down
 ```
 
 Use `docker volume rm s13-training-camps-data` only when you intentionally want to delete saved demo users and enrollments.
